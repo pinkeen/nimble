@@ -2,5 +2,12 @@ config.log
 .sconsign.dblite
 .sconf_temp
 *~
-bin/
 .svn
+*.o
+*.so
+*.os
+bin/examples/bench/bench
+bin/examples/collision/collision
+bin/examples/demo/demo
+bin/examples/game/game
+bin/examples/tesseltest/tesseltest
