@@ -1,0 +1,101 @@
+=== Uwagi ===
+
+Pisząc ten dokument i kod posiłkowałem się angielską wikipedią (ładna tabelka wzorców i zwięzłe opisy), 
+więc nie wiem na ile pokrywa się to wszystko z zajęciami. Natomiast pewnym jest, że wzorce 
+należy traktować jako wskazówki. Konkretne wdrożenie wzorca nie musi się pokrywać
+z teoretycznymi dla niego diagramami itp. i zapewne i tak jest w tym przypadku. Nie starałem
+się wykorzystać jak najwięcej wzorców ani jak najlepiej dostosować się do ich teorii
+lecz stworzyć elasyczną i zarazem prostą w użyciu bibliotekę.
+
+Zrezygnowałem ze wzorca Singletonu. Jest teraz uważany za antywzorzec. Dzięki temu, każda klasa
+przy konstrukcji dostaje wskaźniki do potrzebnych jej obiektów (np. instancji podsystemów)
+możliwe jest Dependency Injection, automatycznie zwiększa się elastyczność całej aplikacji 
+i izolacja klas.
+
+=== Czemu nie przeciążyłem operatorów w klasach Vector czy Rect? ===
+
+Ponieważ mając do dyspozycji tak piękną składnię jak np. v3 = v1 + v2 * v5, mało kto zastanawia
+się co dzieje się w środku. A co się dzieje? Nie raz tworzone jest bardzo dużo obiektów
+temporary, co jest kosztowne (w sensie czasu procesora).
+
+Dzięki temu, że mamy zwykłe, proste metody skłania to do zastanowienia się (i nie raz wymusza) dużo
+wydajniejsze konstrukcje.
+
+=== Wykorzystane wzorce ===
+
+* Fasada
+
+Np. klasa Application. W metodzie start() inicializuje inne podsystemy i obsługuje główną pętlę
+programu. Końcowy użytkownik woła tylko jedną metodę, nie martwiąc się o szczegóły.
+
+* Wrapper/Adapter
+
+Co prawda OpenGL nie jest obiektowym API, ale klasa OGLGraphics "zawija" szczegóły implementacji
+w przystępny interfejs.
+
+Tak samo klasa Input ukrywa szczegóły działania podystemu wejścia SDL.
+
+...
+
+* Most
+
+Klasy abstrakcyjne Graphics i Image tworzą interfejs który może być zaimplementowany przez
+różne backendy do rysowania grafiki. Na razie napisałem tylko backend OGL ale w przyszłości
+potrzebny będzie także backend do OpenGL ES oraz software'owy, możliwe, że także wiele innych.
+
+Zastosowałem tutaj ciekawe rozwiązanie. Ponieważ sposób przchowywania obrazka (Image) zależny
+jest od backendu, to instancje Image mogą być tworzone tylko przez Graphics (można powiedzieć,
+że przez metodę fabryczną). Dzięki temu mamy pewność, że wszystkie obiekty Image można bezpiecznie
+zrzutować na konkretną implementację. (I robi to wewnątrz implementor Graphics)
+
+* Obserwator
+
+Klasy Timer i TimerObserver korzystają z tego wzorca. Timer może powiadamiać klasy wywiedzione
+z TimerObserver o tym, że wystąpił "wystrzał" (minęła określona ilość czasu, etc.).
+
+BTW Timer'y działają synchronicznie - są dowiązane do głównej pętli aplikacji, co znacznie ułatwia
+zadanie (brak zabawy z wątkami) ale też pojawiają się nowe problemy. Co jeśli timer ma strzelać częściej
+niż wykonywana jest główna pętla aplikacji? W tym zastosowaniu jest to istotne o tyle, że trzeba 
+skompensować pominięte "wystrzały". Reszta jest nieważna - "czego nie widzi użytkownik to nie istnieje".
+
+* Iterator
+
+Klasa SpriteContainer, implementująca automatycznie sortującą się (przy wstawianiu) listę jednokierunkową,
+posiada podklasę Iterator realizującą w/w wzorzec (nieco w stylu javowym).
+
+* Factory Method
+
+Klasa Configurator będzie produkowała konkretne implementacje pewnych interfejsów (czy klas abstrakcyjnych)
+takich jak Graphics, FrameLimiter, etc. Na razie to tylko stub i w dodatku nie ma co produkować kiedy mamy
+tylko jedną implementację Graphics czy FrameLimiter'a.
+
+* Dekorator
+
+TransitionViewState i jego pochodne dekoruje ViewState, dostarczając różnych przejść między "ekranami".
+
+* Flyweight (Pyłek?)
+
+Np. wiele animacji (Animation) może korzystać (być oparta o) z tych samych instacji klasy Image. Zważywszy na to, 
+że system obsługuje tilesety (sprite sheety) jest to jedyne słuszne rozwiązanie. 
+
+* Stan
+
+Można powiedzieć, że Application wraz z ViewState i pochodnymi to pewngo rodzaju wariant tego wzorca.
+
+* Inne ciekawe (?) rozwiązania.
+
+Wiele klas (np. Animation, AnimationFrame, Image, Timer) ma ukryte konstruktory, które - dzięki mechanizmowi friend - są widoczne tylko 
+dla odpowiednich kontenerów. Dzięki temu mogą być konstruowane tylko przy pomocy konkretnych instacji kontenerów i automatycznie
+są przy tym składowane. Dzięki temu uniemożliwiamy (bardziej utrudniamy) wycieki pamięci i odciążamy użytkownika z obowiązku jej
+zwalniania.
+
+Podobnie jedyny konstruktor klasy Sprite żąda podania wskaźnika do SpriteEngine'u i przy tworzeniu automatycznie się w nim rejestruje,
+przez co każda instacja Sprite jest zwalniania przez SpriteEngine.
+
+Cel jest taki, żeby końcowy odbiorca nie musiał ani razu napisać delete czy free.
+Jak na razie sprawdzone valgrindem i nic nie cieknie.
+
+... i wiele innych.
+
+PS Chciałbym też zauważyć, że wzorce projektowe != OOP. Są wzorce nie związane z OOP. I wiele 
+wzorców OOP można w pewnym wariancie zastosować w językach bez wsparcia obiektów.

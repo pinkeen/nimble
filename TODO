@@ -1,0 +1,41 @@
+
+TODO:
+REMEMBER - KISS!
+
+* refactoring, refactoring, refactoring ;)
+* optimizing ;|
+* testing & bugfixing :/
+
+* !!!! fix color wrapping (currently wraps at 1.0f)
+- ! narrow phase collision detection (concave polygons anyone?) [point in polygon?]
+	DONE: concave polygons tesselation into convex ones + separating axis theorem test
+* !! reading animation definitions from file
+* !! configurator is a stub (write ConfigFile class)
+* !!! bitmap fonts (behaving like any other sprites)
+* !? quadtree (or other spatial hashing) based collision culling (broadphase)
+* looped sprites
+* audio engine (SDL_mixer wrapper)
+* mouse support (trivial)
+* joystick support
+* generic particle class
+* more ViewTransition classes!
+	* "Loading..." view transition (progress callback with ImageManagerProxy?)
+* ? more sophisticated FrameLimiter (adaptive could overcompensate after high load)
+	* not limiting FrameLimiter for performance testing
+* tools to ease creating BoundingShape's and animation definition files etc.
+* full screen shaders for ogl backend (fbos? rendertotexture?)
+* sprite engine (graphics backend) shall have a clipping rect
+* doxygen api docs
+* tutorials and examples
+* pure SDL (software?) graphics backend
+* attaching one sprite to another (kind of skeletel anims possible)
+* ? custom shaders attachable to sprites
+* ? drawing primitives
+* ? persistence framework for saving
+* ? logger is ugly (is it?)
+* tilemap support (with editor)
+	Needing user to write/extend sprite factory. (? Generic factory allowing
+	registration name/factory func pointer?)
+
+* release and relax
+* more and more ideas will come...

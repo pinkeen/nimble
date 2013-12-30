@@ -1,0 +1,160 @@
+{
+   GLCORECOND
+   Memcheck:Cond
+   obj:/usr/lib/libGLcore.so.*
+}
+
+{
+   GLCORECOND_strcmp
+   Memcheck:Cond
+   fun:strcmp
+   obj:/usr/lib/libGLcore.so.*
+}
+
+{
+   GLCORECOND_all
+   Memcheck:Cond
+   ...
+   obj:/usr/lib/libGLcore.so.*
+}
+
+{
+   SDLCOND_all
+   Memcheck:Cond
+   ...
+   obj:/usr/lib/libSDL.so.*
+}
+
+{
+   SDLINIT
+   Memcheck:Leak
+   fun:SDL_Init
+   ...
+   fun:main
+}
+
+{
+   SDLVINIT
+   Memcheck:Leak
+   ...
+   fun:SDL_VideoInit
+}
+
+{
+   IMGINIT
+   Memcheck:Leak
+   ...
+   fun:IMG_Init
+}
+
+{
+   SDLINITSS
+   Memcheck:Leak
+   ...
+   fun:SDL_InitSubSystem
+}
+
+{
+   LIBSDLLEAKALL
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/libSDL*
+}
+
+{
+   LIBX11LEAKALL
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/libX11*
+}
+
+{
+   LIBGLLEAKALL
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/libGL*
+}
+
+{
+   LIBDL
+   Memcheck:Leak
+   ...
+   obj:/lib/ld*
+}
+
+
+{
+   X11setkeyboardstate
+   Memcheck:Cond
+   fun:X11_SetKeyboardState
+   ...
+   fun:main
+}
+
+{
+   libasoundall
+   Memcheck:Param
+   ...
+   obj:/usr/lib/libasound.*
+}
+
+{
+   libasoundleakall
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/libasound.*
+}
+
+{
+   libasound1
+   Memcheck:Param
+   ioctl(arg)
+   fun:ioctl
+   fun:snd_pcm_start
+   fun:snd1_pcm_direct_initialize_slave
+   fun:snd_pcm_dmix_open
+   fun:_snd_pcm_dmix_open
+   fun:snd_pcm_open_conf
+   fun:snd_pcm_open_noupdate
+   fun:snd1_pcm_open_named_slave
+   fun:_snd_pcm_softvol_open
+   fun:snd_pcm_open_conf
+   fun:snd1_pcm_open_named_slave
+   fun:_snd_pcm_plug_open
+}
+
+{
+   libasound2
+   Memcheck:Param
+   ioctl(arg)
+   fun:ioctl
+   fun:snd_pcm_prepare
+   fun:snd_pcm_hw_params
+   fun:snd1_pcm_direct_initialize_slave
+   fun:snd_pcm_dmix_open
+   fun:_snd_pcm_dmix_open
+   fun:snd_pcm_open_conf
+   fun:snd_pcm_open_noupdate
+   fun:snd1_pcm_open_named_slave
+   fun:_snd_pcm_softvol_open
+   fun:snd_pcm_open_conf
+   fun:snd1_pcm_open_named_slave
+}
+
+{
+   libasound3
+   Memcheck:Param
+   semctl(IPC_SET, arg.buf)
+   fun:semctl@@GLIBC_2.2
+   fun:snd1_pcm_direct_semaphore_create_or_connect
+   fun:snd_pcm_dmix_open
+   fun:_snd_pcm_dmix_open
+   fun:snd_pcm_open_conf
+   fun:snd_pcm_open_noupdate
+   fun:snd1_pcm_open_named_slave
+   fun:_snd_pcm_softvol_open
+   fun:snd_pcm_open_conf
+   fun:snd1_pcm_open_named_slave
+   fun:_snd_pcm_plug_open
+   fun:snd_pcm_open_conf
+}

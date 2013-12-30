@@ -1,0 +1,103 @@
+'''
+    Nimble build scons script.
+    (c) Filip Sobalski <pinkeen@gmail.com>
+'''
+
+import string
+import sys
+
+prdFlags = '-O3'
+dbgFlags = '-g -O0 -Wall'
+
+depends = []
+depends.append({'name': 'SDL', 'headers': ['SDL/SDL.h']})
+depends.append({'name': 'SDL_image', 'headers': ['SDL/SDL_image.h']})
+depends.append({'name': 'm', 'headers': ['cmath']})
+depends.append({'name': 'GL', 'headers': ['GL/gl.h']})
+depends.append({'name': 'GLEW', 'headers': ['GL/glew.h']})
+
+libs = map(lambda x: x['name'], depends)
+
+libName = 'nimble'
+libDirs = ['nimble', 'nimble/opengl', 'nimble/polygons']
+
+flags = prdFlags
+examples = ['demo', 'tesseltest', 'bench', 'collision', 'game']
+
+AddOption('--debug-build', dest='debug', action='store_true', help='build with debug symbols', default=False)
+AddOption('--static-library', dest='static', action='store_true', help='build static library', default=False)
+
+if GetOption('debug'):
+    flags = dbgFlags
+
+def checkDeps(deps):
+    if GetOption('clean') or GetOption('help'):
+        return
+
+    ok = True
+    
+    for dep in deps:
+        env = Environment()
+        conf = Configure(env)
+        if not conf.CheckLibWithHeader(dep['name'], dep['headers'], 'cpp'):
+            ok = False
+        env = conf.Finish()
+   
+    if not ok:
+        sys.stderr.write("Dependecies are missing. Exiting...\n")
+        Exit(1)
+
+def globDirs(dirs):
+    sources = []
+
+    for d in dirs:
+        sources = sources + Glob(d + '/*.cpp')
+
+    return sources
+
+def buildExample(name, nimbleLib, static, env = None):
+    sources = globDirs(['examples/' + name])
+
+    env = Environment(CCFLAGS = flags, LIBS = [nimbleLib], CPPPATH='.', LIBPATH='.')
+    
+    if static:
+        env.Append(LIBS = libs)
+
+    prg = env.Program('examples/' + name + '/' + name, sources)
+    env.Depends(prg, nimbleLib)
+
+    return prg
+
+def buildLib(static):
+    sources = globDirs(libDirs)
+    env = Environment(CCFLAGS = flags, LIBS = libs)
+
+    if static:
+        lib = env.StaticLibrary(libName, sources)
+    else:
+        lib = env.SharedLibrary(libName, sources)
+    
+    return lib
+
+
+            
+
+checkDeps(depends)
+
+lib = buildLib(GetOption('static'))
+
+exm = []
+for e in examples:
+    exm = exm + buildExample(e, lib, GetOption('static'))
+
+Alias('lib', lib)
+Alias(libName, lib)
+Alias("examples", exm)
+Alias("all", lib + exm)
+Default(lib)
+
+
+
+
+
+

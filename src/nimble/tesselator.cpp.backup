@@ -1,0 +1,79 @@
+#include "tesselator.h"
+
+#include "logger.h"
+#include <cmath>
+
+#define TRI_AREA(a, b, c) (fabsf((a.x() - c.x()) * (b.y() - c.y())) - ((b.x() - c.x()) * (a.y() - c.y())))
+
+Tesselator::Tesselator()
+{
+}
+
+bool Tesselator::pointInTriangle(const Vector &p, const Vector &a, const Vector &b, const Vector &c)
+{
+	float pab = TRI_AREA(p, a, b);
+	float pac = TRI_AREA(p, a, c);
+	float pbc = TRI_AREA(p, b, c);
+	float abc = TRI_AREA(a, b, c);
+
+	if((pab + pac + pbc) > abc)
+		return true;
+
+	return false;
+}
+
+void Tesselator::tesselatePolygon(const std::vector<Vector> &vertices)
+{
+	typedef std::vector<int>::iterator IntIterator;
+	std::vector<int> tris;
+	std::vector<int> poly;
+
+	for(unsigned int i = 0; i < vertices.size(); ++i)
+		poly.push_back(i);
+
+	while(poly.size() > 2)
+	{
+		for(unsigned int i = 0; i < poly.size(); ++i)
+		{
+			unsigned int i1 = i;
+			unsigned int i2 = (i + 1) % poly.size();
+			unsigned int i3 = (i + 2) % poly.size();
+
+			const Vector &v1 = vertices.at(poly.at(i1));
+			const Vector &v2 = vertices.at(poly.at(i2));
+			const Vector &v3 = vertices.at(poly.at(i3));
+
+			bool ear = true;
+
+			for(unsigned int j = 0; j < poly.size(); ++j)
+			{
+				if(j != i1 && j != i2 && j != i3)
+				{
+					if(pointInTriangle(vertices.at(poly.at(j)), v1, v2, v3))
+					{
+						INFO("%d %d %d", poly.at(i1), poly.at(i2), poly.at(i3));
+						ear = false;
+						break;
+					}
+				}
+			}
+
+			if(ear)
+			{
+				tris.push_back(poly.at(i1));
+				tris.push_back(poly.at(i2));
+				tris.push_back(poly.at(i3));
+
+				poly.erase(poly.begin() + i2);
+
+				break;
+			}
+		}
+	}
+
+	for(std::vector<int>::iterator i = tris.begin();
+		i  != tris.end(); ++i)
+	{
+		INFO("%d", *i);
+	}
+}
